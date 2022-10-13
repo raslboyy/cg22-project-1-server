@@ -9,6 +9,6 @@ namespace service_template {
 
 std::string SayHelloTo(std::string_view name);
 
-void AppendHello(userver::components::ComponentList &component_list);
+void AppendHello(userver::components::ComponentList& component_list);
 
-} // namespace service_template
+}  // namespace service_template
