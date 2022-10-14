@@ -24,22 +24,27 @@ class Hello final : public userver::server::handlers::HttpHandlerBase {
     bytes buffer1{raw_buffer, raw_buffer + size};
     bytes buffer2{buffer1};
     auto& response = request.GetHttpResponse();
+    std::string s = "bad";
     try {
       PNM<PnmType::P5> p5(std::move(buffer1));
       response.SetStatus(userver::server::http::HttpStatus::kOk);
+      LOG_DEBUG() << "it's pnm - P5";
+      s = "P5";
     }
     catch (std::exception &e) {
-      LOG_DEBUG() << "not p5";
+      try {
+        PNM<PnmType::P6> p6(std::move(buffer2));
+        response.SetStatus(userver::server::http::HttpStatus::kOk);
+        LOG_DEBUG() << "it's pnm - P6";
+        s = "P6";
+      }
+      catch (std::exception &e) {
+        LOG_DEBUG() << "not pnm";
+        response.SetStatus(userver::server::http::HttpStatus::kBadRequest);
+      };
     }
-    try {
-      PNM<PnmType::P6> p6(std::move(buffer2));
-      response.SetStatus(userver::server::http::HttpStatus::kOk);
-    }
-    catch (std::exception &e) {
-      LOG_DEBUG() << "not p6";
-      response.SetStatus(userver::server::http::HttpStatus::kBadRequest);
-    };
-    return {};
+
+    return s;
   }
 };
 
