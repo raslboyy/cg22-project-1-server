@@ -10,7 +10,6 @@ bytes load(std::string file) {
   auto buffer = new char[length];
   infile.read(buffer, length);
   bytes result(length);
-  for (size_t i = 0; i != length; i++)
-    result[i] = buffer[i];
+  for (size_t i = 0; i != length; i++) result[i] = buffer[i];
   return result;
 }

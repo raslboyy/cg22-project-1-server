@@ -10,15 +10,15 @@
 #include "core/pnm.h"
 
 int main(int argc, char* argv[]) {
-//  auto component_list = userver::components::MinimalServerComponentList()
-//                            .Append<userver::server::handlers::Ping>()
-//                            .Append<userver::components::TestsuiteSupport>()
-//                            .Append<userver::components::HttpClient>()
-//                            .Append<userver::server::handlers::TestsControl>();
-//
-//  service_template::AppendHello(component_list);
-//
-//  return userver::utils::DaemonMain(argc, argv, component_list);
+  //  auto component_list = userver::components::MinimalServerComponentList()
+  //                            .Append<userver::server::handlers::Ping>()
+  //                            .Append<userver::components::TestsuiteSupport>()
+  //                            .Append<userver::components::HttpClient>()
+  //                            .Append<userver::server::handlers::TestsControl>();
+  //
+  //  service_template::AppendHello(component_list);
+  //
+  //  return userver::utils::DaemonMain(argc, argv, component_list);
   std::string s = "P5    1    1   255";
   bytes header;
   for (char c : s) {

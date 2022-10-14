@@ -17,7 +17,6 @@ class Hello final : public userver::server::handlers::HttpHandlerBase {
   std::string HandleRequestThrow(
       const userver::server::http::HttpRequest& request,
       userver::server::request::RequestContext&) const override {
-
     return service_template::SayHelloTo(request.GetArg("name"));
   }
 };
