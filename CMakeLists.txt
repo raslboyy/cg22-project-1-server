@@ -9,40 +9,46 @@ add_subdirectory(third_party/userver)
 
 # Common sources
 add_library(${PROJECT_NAME}_objs OBJECT
-    src/handlers/hello.hpp
-    src/handlers/hello.cpp
-)
+        src/handlers/hello.hpp
+        src/handlers/hello.cpp
+        src/core/pnm.cpp
+        src/core/pnm_type.h
+        src/utils/file.h
+        src/utils/file.cpp
+        src/core/pixel.cpp
+        src/core/pixel.h
+        )
 target_link_libraries(${PROJECT_NAME}_objs PUBLIC userver-core)
 
 
 # The Service
-add_executable(${PROJECT_NAME} src/main.cpp src/core/pnm.cpp src/core/pnm_type.h src/utils/file.h src/utils/file.cpp)
+add_executable(${PROJECT_NAME} src/main.cpp src/core/color_space.h)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_objs)
 
 
-## Unit Tests
-#add_executable(${PROJECT_NAME}_unittest
-#    src/hello_test.cpp
-#)
-#target_link_libraries(${PROJECT_NAME}_unittest PRIVATE ${PROJECT_NAME}_objs userver-utest)
-#add_google_tests(${PROJECT_NAME}_unittest)
+# Unit Tests
+add_executable(${PROJECT_NAME}_unittest
+        unittests/pnm_test.cpp
+        )
+target_link_libraries(${PROJECT_NAME}_unittest PRIVATE ${PROJECT_NAME}_objs userver-utest)
+add_google_tests(${PROJECT_NAME}_unittest)
 
 
-## Benchmarks
-#add_executable(${PROJECT_NAME}_benchmark
-#	src/hello_benchmark.cpp
-#)
-#target_link_libraries(${PROJECT_NAME}_benchmark PRIVATE ${PROJECT_NAME}_objs userver-ubench)
-#add_google_benchmark_tests(${PROJECT_NAME}_benchmark)
+# Benchmarks
+add_executable(${PROJECT_NAME}_benchmark
+
+        )
+target_link_libraries(${PROJECT_NAME}_benchmark PRIVATE ${PROJECT_NAME}_objs userver-ubench)
+add_google_benchmark_tests(${PROJECT_NAME}_benchmark)
 
 # Functional Tests
 add_subdirectory(tests)
 
-if(DEFINED ENV{PREFIX})
-	message(STATUS "Set install prefix: $ENV{PREFIX}")
-	file(TO_CMAKE_PATH "$ENV{PREFIX}" PREFIX_PATH)
-	set(CMAKE_INSTALL_PREFIX ${PREFIX_PATH})
-endif()
+if (DEFINED ENV{PREFIX})
+    message(STATUS "Set install prefix: $ENV{PREFIX}")
+    file(TO_CMAKE_PATH "$ENV{PREFIX}" PREFIX_PATH)
+    set(CMAKE_INSTALL_PREFIX ${PREFIX_PATH})
+endif ()
 
 set(CONFIG_VAR_PATH ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_SYSCONFDIR}/${PROJECT_NAME}/config_vars.yaml)
 set(CONFIG_FALLBACK_PATH ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_SYSCONFDIR}/${PROJECT_NAME}/dynamic_config_fallback.json)
