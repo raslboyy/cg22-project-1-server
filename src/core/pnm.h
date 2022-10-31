@@ -1,12 +1,13 @@
 #ifndef D033A8B5_97FB_421A_B35C_76213600980C
 #define D033A8B5_97FB_421A_B35C_76213600980C
 
+#include <algorithm>
 #include <string>
 #include <vector>
-#include <algorithm>
 
-#include "pnm_type.h"
+#include "pixel.h"
 
+namespace server::core::pnm {
 using byte = char;
 using bytes = std::vector<byte>;
 
@@ -19,39 +20,29 @@ struct Header {
   PnmType type{};
 };
 
-template<PnmType type>
-struct Pixel;
-template<>
-struct Pixel<PnmType::P5> {
-  int32_t scale{};
-};
-template<>
-struct Pixel<PnmType::P6> {
-  int32_t r{};
-  int32_t g{};
-  int32_t b{};
-};
-
-template<PnmType type>
+template <ColorSpace colorSpace>
 struct Body {
-  explicit Body(bytes &&buffer, uint32_t width, uint32_t height);
+  explicit Body(bytes&& buffer, uint32_t width, uint32_t height);
   Body() = default;
   uint32_t width{};
   uint32_t height{};
-  std::vector<Pixel<type>> pixels{};
+  std::vector<Pixel<colorSpace>> pixels{};
 };
 
-template<PnmType type>
+template <ColorSpace colorSpace>
 class PNM {
  public:
-  explicit PNM(bytes &&buffer);
+  explicit PNM(bytes&& buffer);
+  PNM(const Header& header, const Body<colorSpace>& body);
   [[nodiscard]] uint32_t width() const { return header_.width; }
   [[nodiscard]] uint32_t height() const { return header_.height; }
+
  private:
   Header header_{};
-  Body<type> body_{};
-  static void cursor_skip_whitespaces(size_t &cursor, const bytes &buffer);
-  static int32_t read_int(size_t &cursor, const bytes &buffer);
+  Body<colorSpace> body_{};
+  static void cursor_skip_whitespaces(size_t& cursor, const bytes& buffer);
+  static int32_t read_int(size_t& cursor, const bytes& buffer);
 };
+}  // namespace server::core::pnm
 
 #endif /* D033A8B5_97FB_421A_B35C_76213600980C */

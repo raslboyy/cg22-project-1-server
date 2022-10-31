@@ -3,6 +3,7 @@
 
 #include "pnm.h"
 
+namespace server::core::pnm {
 Header::Header(bytes type, uint32_t width, uint32_t height,
                uint32_t max_color_value) {
   if (type.size() != 2) throw std::exception();
@@ -21,8 +22,8 @@ Header::Header(bytes type, uint32_t width, uint32_t height,
   this->height = height;
 }
 
-template <PnmType type>
-PNM<type>::PNM(bytes&& buffer) {
+template <ColorSpace colorSpace>
+PNM<colorSpace>::PNM(bytes&& buffer) {
   bytes type_ = {buffer[0], buffer[1]};
   size_t cursor = 2;
   cursor_skip_whitespaces(cursor, buffer);
@@ -30,42 +31,49 @@ PNM<type>::PNM(bytes&& buffer) {
   uint32_t height = read_int(cursor, buffer);
   uint32_t max_color_value = read_int(cursor, buffer);
   header_ = {type_, width, height, max_color_value};
+  cursor_skip_whitespaces(cursor, buffer);
 
   if (width == 0 || height == 0) return;
-  
+
   // TODO: move, dont copy
-  body_ = Body<type>{bytes{buffer.begin() + cursor + 1, buffer.end()}, width, height};
+  body_ = Body<colorSpace>{bytes{buffer.begin() + cursor, buffer.end()}, width,
+                           height};
 }
-template <PnmType type>
-int32_t PNM<type>::read_int(size_t& cursor, const bytes& buffer) {
+template <ColorSpace colorSpace>
+int32_t PNM<colorSpace>::read_int(size_t& cursor, const bytes& buffer) {
   std::string to_int;
   while (std::isdigit(buffer[cursor])) to_int += buffer[cursor++];
   cursor_skip_whitespaces(cursor, buffer);
   return std::stoi(to_int);
 }
-template <PnmType type>
-void PNM<type>::cursor_skip_whitespaces(size_t& cursor, const bytes& buffer) {
+template <ColorSpace colorSpace>
+void PNM<colorSpace>::cursor_skip_whitespaces(size_t& cursor,
+                                              const bytes& buffer) {
   while (std::iswspace(buffer[cursor])) cursor++;
 }
+template <ColorSpace colorSpace>
+PNM<colorSpace>::PNM(const Header& header, const Body<colorSpace>& body)
+    : header_(header), body_(body) {}
 
 template <>
-Body<PnmType::P5>::Body(bytes&& buffer, uint32_t width, uint32_t height)
+Body<ColorSpace::NONE>::Body(bytes&& buffer, uint32_t width, uint32_t height)
     : width(width), height(height) {
   pixels.reserve(buffer.size());
   for (size_t i = 0; i != buffer.size(); i++)
-    pixels.emplace_back(Pixel<PnmType::P5>{std::move(buffer[i])});
+    pixels.emplace_back(Pixel<ColorSpace::NONE>{buffer[i]});
 }
 template <>
-Body<PnmType::P6>::Body(bytes&& buffer, uint32_t width, uint32_t height)
+Body<ColorSpace::RGB>::Body(bytes&& buffer, uint32_t width, uint32_t height)
     : width(width), height(height) {
   pixels.reserve(buffer.size() / 3);
   for (size_t i = 0; i != buffer.size(); i += 3)
-    pixels.emplace_back(Pixel<PnmType::P6>{std::move(buffer[i]),
-                                           std::move(buffer[i + 1]),
-                                           std::move(buffer[i + 2])});
+    pixels.emplace_back(
+        Pixel<ColorSpace::RGB>{buffer[i], buffer[i + 1], buffer[i + 2]});
 }
 
-template struct Body<PnmType::P5>;
-template struct Body<PnmType::P6>;
-template class PNM<PnmType::P5>;
-template class PNM<PnmType::P6>;
+template struct Body<ColorSpace::NONE>;
+template struct Body<ColorSpace::RGB>;
+template class PNM<ColorSpace::NONE>;
+template class PNM<ColorSpace::RGB>;
+
+}  // namespace server::core::pnm

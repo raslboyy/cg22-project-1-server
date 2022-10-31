@@ -5,6 +5,6 @@
 
 #include "../core/pnm.h"
 
-bytes load(std::string file);
+server::core::pnm::bytes load(std::string file);
 
 #endif  // SERVICE_TEMPLATE_SRC_UTILS_FILE_H_
