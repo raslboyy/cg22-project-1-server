@@ -5,6 +5,7 @@
 #include "userver/logging/log.hpp"
 
 namespace server::core::pnm {
+using namespace color_space;
 Header::Header(bytes type, uint32_t width, uint32_t height,
                uint32_t max_color_value) {
   if (type.size() != 2) throw std::exception();
@@ -32,16 +33,15 @@ Body<color_space::ColorSpace::NONE>::Body(bytes&& buffer, uint32_t width,
     pixels.emplace_back(
         color_space::Pixel<color_space::ColorSpace::NONE>{buffer[i]});
 }
-template <>
-Body<color_space::ColorSpace::RGB>::Body(bytes&& buffer, uint32_t width,
+template <color_space::ColorSpace colorSpace>
+Body<colorSpace>::Body(bytes&& buffer, uint32_t width,
                                          uint32_t height)
     : width(width), height(height) {
   if (buffer.size() % 3 != 0)
     throw std::exception();
   pixels.reserve(buffer.size() / 3);
   for (size_t i = 0; i < buffer.size(); i += 3) {
-    pixels.emplace_back(color_space::Pixel<color_space::ColorSpace::RGB>(
-        buffer[i], buffer[i + 1], buffer[i + 2]));
+    pixels.emplace_back(ConstructPixel<colorSpace>(buffer[i], buffer[i + 1], buffer[i + 2]));
   }
 }
 
@@ -54,10 +54,12 @@ Body<To> ColorSpaceConversion(Body<From> from) {
   for (size_t i = 0; i != from.pixels.size(); i++)
     to.pixels.template emplace_back(
         color_space::ColorSpaceConversion<From, To>(from.pixels[i]));
+  return to;
 }
 
 template struct Body<color_space::ColorSpace::NONE>;
 template struct Body<color_space::ColorSpace::RGB>;
+template struct Body<color_space::ColorSpace::HSL>;
 
 template <color_space::ColorSpace colorSpace>
 PNM<colorSpace>::PNM(bytes&& buffer) {
@@ -99,9 +101,13 @@ PNM<To> ColorSpaceConversion(PNM<From> from) {
   PNM<To> to;
   to.header_ = from.header_;
   to.body_ = ColorSpaceConversion<From, To>(from.body_);
+  return to;
 }
 
 template class PNM<color_space::ColorSpace::NONE>;
 template class PNM<color_space::ColorSpace::RGB>;
+template class PNM<color_space::ColorSpace::HSL>;
+template PNM<ColorSpace::RGB> ColorSpaceConversion(PNM<ColorSpace::HSL>);
+template PNM<ColorSpace::HSL> ColorSpaceConversion(PNM<ColorSpace::RGB>);
 
 }  // namespace server::core::pnm

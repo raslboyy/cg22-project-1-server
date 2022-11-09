@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.12)
 project(service_template CXX)
+set (CMAKE_CXX_STANDARD 20)
 
 include(third_party/userver/cmake/SetupEnvironment.cmake)
 include(GNUInstallDirs)
@@ -22,7 +23,7 @@ target_link_libraries(${PROJECT_NAME}_objs PUBLIC userver-core)
 
 
 # The Service
-add_executable(${PROJECT_NAME} src/main.cpp src/core/color_space.h)
+add_executable(${PROJECT_NAME} src/main.cpp src/core/color_space.h src/core/body.cpp src/core/body.h src/core/header.cpp src/core/header.h)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_objs)
 
 

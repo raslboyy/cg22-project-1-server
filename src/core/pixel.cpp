@@ -1,5 +1,6 @@
 #include "pixel.h"
 
+#include <math.h>
 #include <algorithm>
 
 namespace server::core::pnm::color_space {
@@ -24,8 +25,6 @@ static channel get_hue(channel R, channel G, channel B) {
   return {};
 }
 
-static channel get_saturation(channel R, channel G, channel B) {}
-
 // From RGB to HSL
 template <>
 Pixel<ColorSpace::HSL> ColorSpaceConversion<ColorSpace::RGB, ColorSpace::HSL>(
@@ -43,7 +42,7 @@ Pixel<ColorSpace::HSL> ColorSpaceConversion<ColorSpace::RGB, ColorSpace::HSL>(
   else
     to.saturation = (V - L) / std::min(L, 1 - L);
 
-  return {};
+  return to;
 }
 
 // From RGB to HSV
@@ -60,14 +59,35 @@ Pixel<ColorSpace::HSV> ColorSpaceConversion<ColorSpace::RGB, ColorSpace::HSV>(
   auto V = x_max;
   to.saturation = compare(V, 0) ? 0 : C / V;
 
-  return {};
+  return to;
 }
 
 // From HSL to RGB
 template <>
 Pixel<ColorSpace::RGB> ColorSpaceConversion<ColorSpace::HSL, ColorSpace::RGB>(
     Pixel<ColorSpace::HSL> from) {
-
+  auto C = (1 - std::abs(2 * from.lightness - 1)) * from.saturation;
+  auto H_ = from.hue / 60;
+  auto X = C * (1 - std::abs(fmod(H_, 2) - 1));
+  channel R1 = 0, G1 = 0, B1 = 0;
+  if (H_ < 1.)
+    R1 = C, G1 = X, B1 = 0;
+  else if (H_ < 2)
+    R1 = X, G1 = C, B1 = 0;
+  else if (H_ < 3)
+    R1 = 0, G1 = C, B1 = X;
+  else if (H_ < 4)
+    R1 = 0, G1 = X, B1 = C;
+  else if (H_ < 5)
+    R1 = X, G1 = 0, B1 = C;
+  else if (H_ < 6. + eps)
+    R1 = C, G1 = 0, B1 = X;
+  else
+    static_assert(true, "HSL to RGB error");
+  auto m = from.lightness - C / 2;
+  Pixel<ColorSpace::RGB> to;
+  to.red = R1 + m, to.green = G1 + m, to.blue = B1 + m;
+  return to;
 }
 
 template <>
