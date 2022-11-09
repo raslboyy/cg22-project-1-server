@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "../core/pnm.h"
+#include "pnm.h"
 
 server::core::pnm::bytes load(std::string file);
 

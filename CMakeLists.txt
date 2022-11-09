@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.12)
 project(service_template CXX)
-set (CMAKE_CXX_STANDARD 20)
 
 include(third_party/userver/cmake/SetupEnvironment.cmake)
 include(GNUInstallDirs)
@@ -12,18 +11,23 @@ add_subdirectory(third_party/userver)
 add_library(${PROJECT_NAME}_objs OBJECT
         src/handlers/hello.hpp
         src/handlers/hello.cpp
+        src/core/bytes.h
         src/core/pnm.cpp
         src/core/pnm_type.h
+        src/core/body.h src/core/body.cpp
+        src/core/header.h src/core/header.cpp
         src/utils/file.h
         src/utils/file.cpp
+        src/core/color_space.h
         src/core/pixel.cpp
         src/core/pixel.h
         )
 target_link_libraries(${PROJECT_NAME}_objs PUBLIC userver-core)
+target_include_directories(${PROJECT_NAME}_objs PRIVATE src/core)
 
 
 # The Service
-add_executable(${PROJECT_NAME} src/main.cpp src/core/color_space.h src/core/body.cpp src/core/body.h src/core/header.cpp src/core/header.h)
+add_executable(${PROJECT_NAME} src/main.cpp)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_objs)
 
 

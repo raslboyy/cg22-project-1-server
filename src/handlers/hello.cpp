@@ -1,5 +1,5 @@
 #include "hello.hpp"
-#include "../core/pnm.h"
+#include "pnm.h"
 #include "userver/logging/log.hpp"
 
 #include <string>

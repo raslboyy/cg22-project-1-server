@@ -9,38 +9,10 @@
 #include "pnm_type.h"
 
 // #include "body.h"
-// #include "header.h"
+#include "bytes.h"
+#include "header.h"
 
 namespace server::core::pnm {
-using byte = char;
-using bytes = std::vector<byte>;
-struct Header {
-  Header() = default;
-  Header(bytes type, uint32_t width, uint32_t height, uint32_t max_color_value);
-  uint32_t width{};
-  uint32_t height{};
-  uint32_t max_color_value{};
-  PnmType type{};
-  friend bool operator==(const Header& a, const Header& b) {
-    return a.width == b.width && a.height == b.height &&
-           a.max_color_value == b.max_color_value && a.type == b.type;
-  }
-};
-
-template <color_space::ColorSpace colorSpace>
-struct Body {
-  explicit Body(bytes&& buffer, uint32_t width, uint32_t height);
-  Body() = default;
-  uint32_t width{};
-  uint32_t height{};
-  std::vector<color_space::Pixel<colorSpace>> pixels{};
-  friend bool operator==(const Body<colorSpace>& a, const Body<colorSpace>& b) {
-    return a.pixels == b.pixels;
-  };
-};
-
-template <color_space::ColorSpace From, color_space::ColorSpace To>
-Body<To> ColorSpaceConversion(Body<From> from);
 
 template <color_space::ColorSpace colorSpace>
 class PNM {
