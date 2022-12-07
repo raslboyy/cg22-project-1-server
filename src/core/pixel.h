@@ -46,6 +46,42 @@ struct Pixel<ColorSpace::HSV> {
   channel saturation{};
   channel value{};
 };
+template <>
+struct Pixel<ColorSpace::CMY>{
+  Pixel() = default;
+  Pixel(int32_t c, int32_t m, int32_t y)
+      : cian(c / 255.0), magenta(m / 255.0), yellow(y / 255.0) {}
+  channel cian{};
+  channel magenta{};
+  channel yellow{};
+};
+template<>
+struct Pixel<ColorSpace::YCbCr601>{
+  Pixel() = default;
+  Pixel(int32_t y, int32_t cb, int32_t cr)
+      : luma(y / 255.0), blue_diff(cb / 255.0 - 0.5), red_diff(cr / 255.0 - 0.5) {}
+  channel luma{};
+  channel blue_diff{};
+  channel red_diff{};
+};
+template<>
+struct Pixel<ColorSpace::YCbCr709>{
+  Pixel() = default;
+  Pixel(int32_t y, int32_t cb, int32_t cr)
+      : luma(y / 255.0), blue_diff(cb / 255.0 - 0.5), red_diff(cr / 255.0 - 0.5) {}
+  channel luma{};
+  channel blue_diff{};
+  channel red_diff{};
+};
+template<>
+struct Pixel<ColorSpace::YCoCg>{
+  Pixel() = default;
+  Pixel(int32_t y, int32_t co, int32_t cg)
+      : luma(y / 255.0), chroma_orange(co / 255.0 - 0.5), chroma_green(cg / 255.0 - 0.5) {}
+  channel luma{};
+  channel chroma_orange{};
+  channel chroma_green{};
+};
 
 template <ColorSpace From, ColorSpace To>
 Pixel<To> ColorSpaceConversion(Pixel<From>);

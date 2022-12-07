@@ -28,4 +28,9 @@ Body<colorSpace>::Body(bytes&& buffer, uint32_t width,
 template struct Body<color_space::ColorSpace::NONE>;
 template struct Body<color_space::ColorSpace::RGB>;
 template struct Body<color_space::ColorSpace::HSL>;
+template struct Body<color_space::ColorSpace::HSV>;
+template struct Body<color_space::ColorSpace::CMY>;
+template struct Body<color_space::ColorSpace::YCbCr601>;
+template struct Body<color_space::ColorSpace::YCbCr709>;
+template struct Body<color_space::ColorSpace::YCoCg>;
 }  // namespace server::core::pnm

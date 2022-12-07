@@ -53,7 +53,22 @@ PNM<To> ColorSpaceConversion(PNM<From> from) {
 template class PNM<color_space::ColorSpace::NONE>;
 template class PNM<color_space::ColorSpace::RGB>;
 template class PNM<color_space::ColorSpace::HSL>;
+template class PNM<color_space::ColorSpace::HSV>;
+template class PNM<color_space::ColorSpace::CMY>;
+template class PNM<color_space::ColorSpace::YCbCr601>;
+template class PNM<color_space::ColorSpace::YCbCr709>;
+template class PNM<color_space::ColorSpace::YCoCg>;
+template PNM<ColorSpace::RGB> ColorSpaceConversion(PNM<ColorSpace::YCoCg>);
+template PNM<ColorSpace::RGB> ColorSpaceConversion(PNM<ColorSpace::YCbCr709>);
+template PNM<ColorSpace::RGB> ColorSpaceConversion(PNM<ColorSpace::YCbCr601>);
+template PNM<ColorSpace::RGB> ColorSpaceConversion(PNM<ColorSpace::CMY>);
+template PNM<ColorSpace::RGB> ColorSpaceConversion(PNM<ColorSpace::HSV>);
 template PNM<ColorSpace::RGB> ColorSpaceConversion(PNM<ColorSpace::HSL>);
 template PNM<ColorSpace::HSL> ColorSpaceConversion(PNM<ColorSpace::RGB>);
+template PNM<ColorSpace::HSV> ColorSpaceConversion(PNM<ColorSpace::RGB>);
+template PNM<ColorSpace::CMY> ColorSpaceConversion(PNM<ColorSpace::RGB>);
+template PNM<ColorSpace::YCoCg> ColorSpaceConversion(PNM<ColorSpace::RGB>);
+template PNM<ColorSpace::YCbCr601> ColorSpaceConversion(PNM<ColorSpace::RGB>);
+template PNM<ColorSpace::YCbCr709> ColorSpaceConversion(PNM<ColorSpace::RGB>);
 
 }  // namespace server::core::pnm
