@@ -23,9 +23,22 @@ PNM<colorSpace>::PNM(bytes&& buffer) {
 
   // TODO: move, dont copy
   auto body = bytes{buffer.begin() + cursor, buffer.end()};
-  body_ = Body<colorSpace>{std::move(body), width,
-                           height};
+  body_ = Body<colorSpace>{std::move(body), width, height};
 }
+
+template <color_space::ColorSpace colorSpace>
+bytes PNM<colorSpace>::GetRaw() const {
+  auto header = header_.GetRaw();
+  auto body = body_.GetRaw();
+
+  auto n = header.size();
+  auto raw = std::move(header);
+  raw.resize(n + body.size());
+  for (int i = n; i < (int)raw.size(); i++) raw[i] = body[i - n];
+
+  return raw;
+}
+
 template <color_space::ColorSpace colorSpace>
 int32_t PNM<colorSpace>::read_int(size_t& cursor, const bytes& buffer) {
   std::string to_int;
@@ -42,18 +55,8 @@ template <color_space::ColorSpace colorSpace>
 PNM<colorSpace>::PNM(const Header& header, const Body<colorSpace>& body)
     : header_(header), body_(body) {}
 
-template <color_space::ColorSpace From, color_space::ColorSpace To>
-PNM<To> ColorSpaceConversion(PNM<From> from) {
-  PNM<To> to;
-  to.header_ = from.header_;
-  to.body_ = ColorSpaceConversion<From, To>(from.body_);
-  return to;
-}
-
 template class PNM<color_space::ColorSpace::NONE>;
 template class PNM<color_space::ColorSpace::RGB>;
 template class PNM<color_space::ColorSpace::HSL>;
-template PNM<ColorSpace::RGB> ColorSpaceConversion(PNM<ColorSpace::HSL>);
-template PNM<ColorSpace::HSL> ColorSpaceConversion(PNM<ColorSpace::RGB>);
 
 }  // namespace server::core::pnm

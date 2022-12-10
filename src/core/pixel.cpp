@@ -26,9 +26,9 @@ static channel get_hue(channel R, channel G, channel B) {
 }
 
 // From RGB to HSL
-template <>
-Pixel<ColorSpace::HSL> ColorSpaceConversion<ColorSpace::RGB, ColorSpace::HSL>(
-    Pixel<ColorSpace::RGB> from) {
+Pixel<ColorSpace::HSL>
+ColorSpaceConversion<ColorSpace::RGB, ColorSpace::HSL>::operator()(
+    const Pixel<ColorSpace::RGB>& from) {
   Pixel<ColorSpace::HSL> to;
   auto x_max = std::max(std::max(from.red, from.green), from.blue);
   auto x_min = std::min(std::min(from.red, from.green), from.blue);
@@ -46,9 +46,9 @@ Pixel<ColorSpace::HSL> ColorSpaceConversion<ColorSpace::RGB, ColorSpace::HSL>(
 }
 
 // From RGB to HSV
-template <>
-Pixel<ColorSpace::HSV> ColorSpaceConversion<ColorSpace::RGB, ColorSpace::HSV>(
-    Pixel<ColorSpace::RGB> from) {
+Pixel<ColorSpace::HSV>
+ColorSpaceConversion<ColorSpace::RGB, ColorSpace::HSV>::operator()(
+    const Pixel<ColorSpace::RGB>& from) {
   Pixel<ColorSpace::HSV> to;
   to.value = std::max(std::max(from.red, from.green), from.blue);
   to.hue = get_hue(from.red, from.green, from.blue);
@@ -63,9 +63,9 @@ Pixel<ColorSpace::HSV> ColorSpaceConversion<ColorSpace::RGB, ColorSpace::HSV>(
 }
 
 // From HSL to RGB
-template <>
-Pixel<ColorSpace::RGB> ColorSpaceConversion<ColorSpace::HSL, ColorSpace::RGB>(
-    Pixel<ColorSpace::HSL> from) {
+Pixel<ColorSpace::RGB>
+ColorSpaceConversion<ColorSpace::HSL, ColorSpace::RGB>::operator()(
+    const Pixel<ColorSpace::HSL>& from) {
   auto C = (1 - std::abs(2 * from.lightness - 1)) * from.saturation;
   auto H_ = from.hue / 60;
   auto X = C * (1 - std::abs(fmod(H_, 2) - 1));

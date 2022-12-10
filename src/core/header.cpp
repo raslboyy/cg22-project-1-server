@@ -1,5 +1,6 @@
 #include "header.h"
 #include <cstdint>
+#include <string>
 
 namespace server::core::pnm {
 Header::Header(bytes type, uint32_t width, uint32_t height,
@@ -19,4 +20,23 @@ Header::Header(bytes type, uint32_t width, uint32_t height,
   this->width = width;
   this->height = height;
 }
+
+static std::string ToString(const PnmType& type) {
+  switch (type) {
+    case PnmType::P5:
+      return "P5";
+    case PnmType::P6:
+      return "P6";
+  }
+}
+
+bytes Header::GetRaw() const {
+  std::string raw;
+  raw += ToString(type) + " ";
+  raw += std::to_string(width) + " ";
+  raw += std::to_string(height) + " ";
+  raw += "255 ";
+  return {raw.begin(), raw.end()};
+}
+
 }  // namespace server::core::pnm

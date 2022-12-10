@@ -10,6 +10,7 @@ namespace server::core::pnm {
 struct Header {
   Header() = default;
   Header(bytes type, uint32_t width, uint32_t height, uint32_t max_color_value);
+  bytes GetRaw() const;
   uint32_t width{};
   uint32_t height{};
   uint32_t max_color_value{};

@@ -38,7 +38,7 @@ components_manager:
         dynamic-config:                      # Dynamic config storage options, do nothing
             fs-cache-path: ''
         dynamic-config-fallbacks:            # Load options from file and push them into the dynamic config storage.
-            fallback-path: @CONFIG_FALLBACK_PATH@
+            fallback-path: configs/dynamic_config_fallback.json
         testsuite-support: {}
 
         http-client:
@@ -57,7 +57,12 @@ components_manager:
             throttling_enabled: false
             url_trailing_slash: strict-match
 
-        handler-hello:                    # Finally! Our handler.
-            path: /hello                  # Registering handler by URL '/hello'.
+        handler-validate:                    # Finally! Our handler.
+            path: /validate                  # Registering handler by URL '/hello'.
+            method: GET,POST              # It will only reply to GET (HEAD) and POST requests.
+            task_processor: main-task-processor  # Run it on CPU bound task processor
+
+        handler-convert:                    # Finally! Our handler.
+            path: /convert                  # Registering handler by URL '/hello'.
             method: GET,POST              # It will only reply to GET (HEAD) and POST requests.
             task_processor: main-task-processor  # Run it on CPU bound task processor

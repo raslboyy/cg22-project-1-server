@@ -1,18 +1,18 @@
-#include "hello.hpp"
+#include "validate.h"
 #include "pnm.h"
-#include "userver/logging/log.hpp"
 
 #include <string>
 
+#include <userver/logging/log.hpp>
 #include <userver/server/handlers/http_handler_base.hpp>
 
 namespace service_template {
 
 namespace {
 using namespace server::core::pnm;
-class Hello final : public userver::server::handlers::HttpHandlerBase {
+class Validate final : public userver::server::handlers::HttpHandlerBase {
  public:
-  static constexpr std::string_view kName = "handler-hello";
+  static constexpr std::string_view kName = "handler-validate";
 
   using HttpHandlerBase::HttpHandlerBase;
 
@@ -50,8 +50,8 @@ class Hello final : public userver::server::handlers::HttpHandlerBase {
 
 }  // namespace
 
-void AppendHello(userver::components::ComponentList& component_list) {
-  component_list.Append<Hello>();
+void AppendValidate(userver::components::ComponentList& component_list) {
+  component_list.Append<Validate>();
 }
 
 }  // namespace service_template

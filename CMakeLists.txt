@@ -9,31 +9,39 @@ add_subdirectory(third_party/userver)
 
 # Common sources
 add_library(${PROJECT_NAME}_objs OBJECT
-        src/handlers/hello.hpp
-        src/handlers/hello.cpp
-        src/core/bytes.h
+        include/handlers/validate.h
+        src/handlers/validate.cpp
+        include/core/bytes.h
         src/core/pnm.cpp
-        src/core/pnm_type.h
-        src/core/body.h src/core/body.cpp
-        src/core/header.h src/core/header.cpp
-        src/utils/file.h
+        include/core/pnm_type.h
+        include/core/body.h src/core/body.cpp
+        include/core/header.h src/core/header.cpp
+        include/utils/file.h
         src/utils/file.cpp
-        src/core/color_space.h
+        include/core/color_space.h
         src/core/pixel.cpp
-        src/core/pixel.h
+        include/core/pixel.h
         )
 target_link_libraries(${PROJECT_NAME}_objs PUBLIC userver-core)
 target_include_directories(${PROJECT_NAME}_objs PRIVATE src/core)
 
+include_directories(
+        include/
+        include/api
+        include/core
+        include/handlers
+        include/utils
+)
 
 # The Service
-add_executable(${PROJECT_NAME} src/main.cpp)
+add_executable(${PROJECT_NAME} src/main.cpp include/handlers/convert.h src/handlers/convert.cpp)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_objs)
 
 
 # Unit Tests
 add_executable(${PROJECT_NAME}_unittest
         unittests/pnm_test.cpp
+        unittests/conversion_test.cpp
         )
 target_link_libraries(${PROJECT_NAME}_unittest PRIVATE ${PROJECT_NAME}_objs userver-utest)
 add_google_tests(${PROJECT_NAME}_unittest)

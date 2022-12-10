@@ -5,9 +5,8 @@
 #include <userver/testsuite/testsuite_support.hpp>
 #include <userver/utils/daemon_run.hpp>
 
-#include "handlers/hello.hpp"
-#include <iostream>
-#include "core/pnm.h"
+#include "validate.h"
+#include "convert.h"
 
 int main(int argc, char* argv[]) {
   auto component_list = userver::components::MinimalServerComponentList()
@@ -16,7 +15,8 @@ int main(int argc, char* argv[]) {
                             .Append<userver::components::HttpClient>()
                             .Append<userver::server::handlers::TestsControl>();
 
-  service_template::AppendHello(component_list);
+  service_template::AppendValidate(component_list);
+  service_template::AppendConvert(component_list);
 
   return userver::utils::DaemonMain(argc, argv, component_list);
 }
