@@ -2,10 +2,12 @@
 #define SERVICE_TEMPLATE_SRC_CORE_PIXEL_H_
 
 #include <stdint.h>
+#include <cassert>
 #include <cmath>
 #include <cstdint>
 #include <tuple>
 
+#include "bytes.h"
 #include "color_space.h"
 #include "pnm_type.h"
 
@@ -31,7 +33,8 @@ std::tuple<int32_t, int32_t, int32_t> GetRaw(const Pixel<color>& pixel) {
 
 template <>
 struct Pixel<ColorSpace::NONE> {
-  char scale{};
+  Pixel() = default;
+  byte scale{};
 };
 
 template <>
@@ -46,6 +49,8 @@ struct Pixel<ColorSpace::RGB> {
   [[nodiscard]] int32_t get() const {
     return std::round(255 * std::get<I>(std::tie(red, green, blue)));
   }
+
+  static Pixel white;
 };
 
 template <>
@@ -92,13 +97,43 @@ struct ColorSpaceConversion<ColorSpace::RGB, ColorSpace::HSV> {
   Pixel<ColorSpace::HSV> operator()(const Pixel<ColorSpace::RGB>& pixel);
 };
 
+template <>
+struct ColorSpaceConversion<ColorSpace::HSV, ColorSpace::RGB> {
+  Pixel<ColorSpace::RGB> operator()(const Pixel<ColorSpace::HSV>& pixel);
+};
+
 template <ColorSpace From, Mask Channel>
 struct ColorSpaceConversion<From, ColorSpace::NONE, Channel> {
   Pixel<ColorSpace::NONE> operator()(const Pixel<From>& pixel) {
-    return {static_cast<char>(
+    return {static_cast<byte>(
         pixel.template get<static_cast<std::size_t>(Channel)>())};
   }
 };
+
+template <ColorSpace Space>
+Pixel<Space> AlphaBlending(const Pixel<Space>& background,
+                           const Pixel<Space>& foreground, double alpha) {
+  return ColorSpaceConversion<ColorSpace::RGB, Space>(AlphaBlending(
+      ColorSpaceConversion<Space, ColorSpace::RGB>(background),
+      ColorSpaceConversion<Space, ColorSpace::RGB>(foreground), alpha));
+}
+
+template <>
+Pixel<ColorSpace::NONE> AlphaBlending(const Pixel<ColorSpace::NONE>& background,
+                                      const Pixel<ColorSpace::NONE>& foreground,
+                                      double alpha);
+
+template <>
+Pixel<ColorSpace::RGB> AlphaBlending(const Pixel<ColorSpace::RGB>& background,
+                                     const Pixel<ColorSpace::RGB>& foreground,
+                                     double alpha);
+
+Pixel<ColorSpace::RGB> operator*(double lhs, Pixel<ColorSpace::RGB> pixel);
+
+Pixel<ColorSpace::RGB> operator+(Pixel<ColorSpace::RGB> lhs,
+                                 const Pixel<ColorSpace::RGB>& rhs);
+
+Pixel<ColorSpace::RGB> operator+(Pixel<ColorSpace::RGB> lhs, double rhs);
 
 }  // namespace server::core::pnm::color_space
 

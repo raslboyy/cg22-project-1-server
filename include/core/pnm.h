@@ -16,10 +16,15 @@ namespace server::core::pnm {
 
 template <color_space::ColorSpace colorSpace>
 class PNM {
+ private:
+  struct BracketsProxy;
+
  public:
   PNM() = default;
   explicit PNM(bytes&& buffer);
-  PNM(const Header& header, const Body<colorSpace>& body);
+  PNM(uint32_t width, uint32_t height,
+      color_space::Pixel<colorSpace> color = color_space::Pixel<colorSpace>{});
+  PNM(const PNM&) = default;
   [[nodiscard]] uint32_t width() const { return header_.width; }
   [[nodiscard]] uint32_t height() const { return header_.height; }
   [[nodiscard]] bytes GetRaw() const;
@@ -32,11 +37,28 @@ class PNM {
     return a.header_ == b.header_ && a.body_ == b.body_;
   }
 
+  auto operator[](size_t i) { return BracketsProxy(*this, i * header_.width); }
+  auto operator[](size_t i) const {
+    return static_cast<const BracketsProxy>(
+        BracketsProxy(const_cast<PNM&>(*this), i * header_.width));
+  }
+
  private:
   Header header_{};
   Body<colorSpace> body_{};
   static void cursor_skip_whitespaces(size_t& cursor, const bytes& buffer);
   static int32_t read_int(size_t& cursor, const bytes& buffer);
+
+  struct BracketsProxy {
+    BracketsProxy(PNM<colorSpace>& inner, size_t offset)
+        : offset(offset), inner(inner) {}
+    auto& operator[](size_t j) { return inner.body_.Get(offset + j); }
+    auto operator[](size_t j) const { return inner.body_.Get(offset + j); }
+
+   private:
+    size_t offset;
+    PNM<colorSpace>& inner;
+  };
 };
 
 template <color_space::ColorSpace From, color_space::ColorSpace To,
@@ -54,6 +76,10 @@ PNM<To> ColorSpaceConversion(const PNM<From>& from) {
     to.header_.type = PnmType::P5;
   to.body_ = ColorSpaceConversion<From, To, Channel>(from.body_);
   return to;
+}
+
+static inline std::string to_string(const bytes& raw) {
+  return {raw.begin(), raw.end()};
 }
 
 }  // namespace server::core::pnm

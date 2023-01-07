@@ -1,6 +1,6 @@
 #include <userver/utest/utest.hpp>
 
-#include "pnm.h"
+#include "core/pnm.h"
 
 using namespace server::core::pnm;
 using namespace server::core::pnm::color_space;

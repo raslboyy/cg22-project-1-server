@@ -1,7 +1,8 @@
 #ifndef SERVICE_TEMPLATE_SRC_CORE_BODY_H_
 #define SERVICE_TEMPLATE_SRC_CORE_BODY_H_
 
-#include <stddef.h>
+#include <cstddef>
+#include <stdexcept>
 #include <vector>
 
 #include "bytes.h"
@@ -11,10 +12,18 @@ namespace server::core::pnm {
 
 template <color_space::ColorSpace colorSpace>
 struct Body {
-  explicit Body(bytes&& buffer, uint32_t width, uint32_t height);
+  Body(bytes&& buffer, uint32_t width, uint32_t height);
+  Body(uint32_t width, uint32_t height,
+       color_space::Pixel<colorSpace> color = color_space::Pixel<colorSpace>{});
   Body() = default;
 
   [[nodiscard]] bytes GetRaw() const;
+  color_space::Pixel<colorSpace>& Get(int i) {
+    if (i < 0 || i >= pixels.size())
+      throw std::invalid_argument("index out of range in body");
+    return pixels[i];
+  }
+  color_space::Pixel<colorSpace> Get(int i) const { return pixels[i]; }
 
   uint32_t width{};
   uint32_t height{};

@@ -1,7 +1,7 @@
 #include <cctype>
 #include <cwctype>
 
-#include "pnm.h"
+#include "core/pnm.h"
 #include "userver/logging/log.hpp"
 
 namespace server::core::pnm {
@@ -27,6 +27,23 @@ PNM<colorSpace>::PNM(bytes&& buffer) {
 }
 
 template <color_space::ColorSpace colorSpace>
+PNM<colorSpace>::PNM(uint32_t width, uint32_t height,
+                     color_space::Pixel<colorSpace> color)
+    : body_(width, height, color) {
+  static const std::string type = "P6";
+  header_ = Header(bytes{type.begin(), type.end()}, width, height, 255);
+}
+
+template <>
+PNM<color_space::ColorSpace::NONE>::PNM(
+    uint32_t width, uint32_t height,
+    color_space::Pixel<color_space::ColorSpace::NONE> color)
+    : body_(width, height, color) {
+  static const std::string type = "P5";
+  header_ = Header(bytes{type.begin(), type.end()}, width, height, 255);
+}
+
+template <color_space::ColorSpace colorSpace>
 bytes PNM<colorSpace>::GetRaw() const {
   auto header = header_.GetRaw();
   auto body = body_.GetRaw();
@@ -42,18 +59,16 @@ bytes PNM<colorSpace>::GetRaw() const {
 template <color_space::ColorSpace colorSpace>
 int32_t PNM<colorSpace>::read_int(size_t& cursor, const bytes& buffer) {
   std::string to_int;
-  while (std::isdigit(buffer[cursor])) to_int += buffer[cursor++];
+  while (std::isdigit(buffer[cursor]))
+    to_int += static_cast<byte>(buffer[cursor++]);
   cursor_skip_whitespaces(cursor, buffer);
   return std::stoi(to_int);
 }
 template <color_space::ColorSpace colorSpace>
 void PNM<colorSpace>::cursor_skip_whitespaces(size_t& cursor,
                                               const bytes& buffer) {
-  while (std::iswspace(buffer[cursor])) cursor++;
+  while (std::isspace(buffer[cursor])) cursor++;
 }
-template <color_space::ColorSpace colorSpace>
-PNM<colorSpace>::PNM(const Header& header, const Body<colorSpace>& body)
-    : header_(header), body_(body) {}
 
 template class PNM<color_space::ColorSpace::NONE>;
 template class PNM<color_space::ColorSpace::RGB>;

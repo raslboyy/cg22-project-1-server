@@ -9,9 +9,14 @@ add_subdirectory(third_party/userver)
 
 # Common sources
 add_library(${PROJECT_NAME}_objs OBJECT
-        include/handlers/validate.h
-        src/handlers/validate.cpp
+        include/handlers/upload.h
+        src/handlers/upload.cpp
+        include/handlers/draw_line.h
+        src/handlers/draw_line.cpp
+        include/handlers/storage_component.h
+        src/handlers/storage_component.cpp
         include/core/bytes.h
+        include/core/pnm.h
         src/core/pnm.cpp
         include/core/pnm_type.h
         include/core/body.h src/core/body.cpp
@@ -21,27 +26,45 @@ add_library(${PROJECT_NAME}_objs OBJECT
         include/core/color_space.h
         src/core/pixel.cpp
         include/core/pixel.h
+        include/entities/line.h
+        src/entities/line.cpp
+        include/entities/point.h
+        src/entities/point.cpp
+        include/entities/canvas.h
+        src/entities/canvas.cpp
+        src/dithering/atkinson.cpp
+        src/dithering/floyd_steinberg.cpp
+        src/dithering/ordered.cpp
+        src/dithering/random.cpp
+        include/dithering
+        include/scaling
+        src/scaling/nearest_neighbor.cpp
+        src/scaling/shifting.cpp
+        src/scaling/bi_linear.cpp
+        include/utils
+        src/utils/useful.cpp
+        src/scaling/lanczos.cpp
+        src/scaling/bc_splines.cpp
         )
 target_link_libraries(${PROJECT_NAME}_objs PUBLIC userver-core)
 target_include_directories(${PROJECT_NAME}_objs PRIVATE src/core)
 
 include_directories(
         include/
-        include/api
-        include/core
-        include/handlers
-        include/utils
 )
 
 # The Service
 add_executable(${PROJECT_NAME} src/main.cpp include/handlers/convert.h src/handlers/convert.cpp)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_objs)
 
+file(GLOB UNITTEST_FILES
+        unittests/*_test.cpp
+        unittests/*_test.h
+        )
 
 # Unit Tests
 add_executable(${PROJECT_NAME}_unittest
-        unittests/pnm_test.cpp
-        unittests/conversion_test.cpp
+        ${UNITTEST_FILES}
         )
 target_link_libraries(${PROJECT_NAME}_unittest PRIVATE ${PROJECT_NAME}_objs userver-utest)
 add_google_tests(${PROJECT_NAME}_unittest)

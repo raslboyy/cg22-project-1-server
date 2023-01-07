@@ -1,5 +1,5 @@
-#include "body.h"
-#include "pixel.h"
+#include "core/body.h"
+#include "core/pixel.h"
 
 #include <stdexcept>
 
@@ -10,10 +10,14 @@ Body<color_space::ColorSpace::NONE>::Body(bytes&& buffer, uint32_t width,
                                           uint32_t height)
     : width(width), height(height) {
   pixels.reserve(buffer.size());
-  for (size_t i = 0; i < buffer.size(); i++)
-    pixels.emplace_back(
-        color_space::Pixel<color_space::ColorSpace::NONE>{buffer[i]});
+  for (byte& i : buffer)
+    pixels.emplace_back(color_space::Pixel<color_space::ColorSpace::NONE>{i});
 }
+
+template <color_space::ColorSpace colorSpace>
+Body<colorSpace>::Body(uint32_t width, uint32_t height,
+                       color_space::Pixel<colorSpace> color)
+    : width(width), height(height), pixels(width * height, color) {}
 
 template <color_space::ColorSpace colorSpace>
 Body<colorSpace>::Body(bytes&& buffer, uint32_t width, uint32_t height)

@@ -1,9 +1,35 @@
-#include "pixel.h"
+#include "core/pixel.h"
 
-#include <math.h>
 #include <algorithm>
+#include <cmath>
+
+#include <iostream>
 
 namespace server::core::pnm::color_space {
+
+Pixel<ColorSpace::RGB> operator*(double lhs, Pixel<ColorSpace::RGB> pixel) {
+  pixel.red *= lhs;
+  pixel.green *= lhs;
+  pixel.blue *= lhs;
+  return pixel;
+}
+
+Pixel<ColorSpace::RGB> operator+(Pixel<ColorSpace::RGB> lhs,
+                                 const Pixel<ColorSpace::RGB>& rhs) {
+  lhs.red += rhs.red;
+  lhs.green += rhs.green;
+  lhs.blue += rhs.blue;
+  return lhs;
+}
+
+Pixel<ColorSpace::RGB> operator+(Pixel<ColorSpace::RGB> lhs, double rhs) {
+  lhs.red += rhs;
+  lhs.green += rhs;
+  lhs.blue += rhs;
+  return lhs;
+}
+
+Pixel<ColorSpace::RGB> Pixel<ColorSpace::RGB>::white(255, 255, 255);
 
 static const channel eps = 1e-6;
 static bool compare(channel a, channel b) { return std::abs(a - b) < eps; }
@@ -62,6 +88,66 @@ ColorSpaceConversion<ColorSpace::RGB, ColorSpace::HSV>::operator()(
   return to;
 }
 
+// From HSV to RGB
+Pixel<ColorSpace::RGB>
+ColorSpaceConversion<ColorSpace::HSV, ColorSpace::RGB>::operator()(
+    const Pixel<ColorSpace::HSV>& in) {
+  double hh, p, q, t, ff;
+  long i;
+  Pixel<ColorSpace::RGB> out;
+
+  if (in.saturation <= 0.0) {  // < is bogus, just shuts up warnings
+    out.red = in.value;
+    out.green = in.value;
+    out.blue = in.value;
+    return out;
+  }
+  hh = in.hue;
+  if (hh >= 360.0) hh = 0.0;
+  hh /= 60.0;
+  i = (long)hh;
+  ff = hh - i;
+  p = in.value * (1.0 - in.saturation);
+  q = in.value * (1.0 - (in.saturation * ff));
+  t = in.value * (1.0 - (in.saturation * (1.0 - ff)));
+
+  switch (i) {
+    case 0:
+      out.red = in.value;
+      out.green = t;
+      out.blue = p;
+      break;
+    case 1:
+      out.red = q;
+      out.green = in.value;
+      out.blue = p;
+      break;
+    case 2:
+      out.red = p;
+      out.green = in.value;
+      out.blue = t;
+      break;
+
+    case 3:
+      out.red = p;
+      out.green = q;
+      out.blue = in.value;
+      break;
+    case 4:
+      out.red = t;
+      out.green = p;
+      out.blue = in.value;
+      break;
+    case 5:
+    default:
+      out.red = in.value;
+      out.green = p;
+      out.blue = q;
+      break;
+  }
+  return out;
+}
+
 // From HSL to RGB
 Pixel<ColorSpace::RGB>
 ColorSpaceConversion<ColorSpace::HSL, ColorSpace::RGB>::operator()(
@@ -95,6 +181,30 @@ bool operator==<ColorSpace::RGB>(const Pixel<ColorSpace::RGB>& p1,
                                  const Pixel<ColorSpace::RGB>& p2) {
   return compare(p1.red, p2.red) && compare(p1.green, p2.green) &&
          compare(p1.blue, p2.blue);
+}
+
+static byte AlphaBlending(byte back, byte front, double alpha) {
+  int value =
+      (int)std::round((uint32_t)back * (1. - alpha) + (uint32_t)front * alpha);
+  value = std::max(value, 0);
+  value = std::min(value, 255);
+  return value;
+}
+
+template <>
+Pixel<ColorSpace::NONE> AlphaBlending(const Pixel<ColorSpace::NONE>& background,
+                                      const Pixel<ColorSpace::NONE>& foreground,
+                                      double alpha) {
+  return {AlphaBlending(background.scale, foreground.scale, alpha)};
+}
+
+template <>
+Pixel<ColorSpace::RGB> AlphaBlending(const Pixel<ColorSpace::RGB>& background,
+                                     const Pixel<ColorSpace::RGB>& foreground,
+                                     double alpha) {
+  return {AlphaBlending(background.red * 255, foreground.red * 255, alpha),
+          AlphaBlending(background.green * 255, foreground.green * 255, alpha),
+          AlphaBlending(background.blue * 255, foreground.blue * 255, alpha)};
 }
 
 }  // namespace server::core::pnm::color_space

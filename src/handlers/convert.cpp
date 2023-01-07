@@ -1,5 +1,5 @@
-#include "pnm.h"
-#include "validate.h"
+#include "core/pnm.h"
+#include "handlers/upload.h"
 
 #include <functional>
 #include <string>
