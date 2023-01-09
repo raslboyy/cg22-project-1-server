@@ -19,7 +19,7 @@ struct Body {
 
   [[nodiscard]] bytes GetRaw() const;
   color_space::Pixel<colorSpace>& Get(int i) {
-    if (i < 0 || i >= pixels.size())
+    if (i < 0 || i >= (int)pixels.size())
       throw std::invalid_argument("index out of range in body");
     return pixels[i];
   }

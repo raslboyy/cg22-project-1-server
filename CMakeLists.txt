@@ -9,12 +9,12 @@ add_subdirectory(third_party/userver)
 
 # Common sources
 add_library(${PROJECT_NAME}_objs OBJECT
-        include/handlers/upload.h
+        include/handlers
         src/handlers/upload.cpp
-        include/handlers/draw_line.h
         src/handlers/draw_line.cpp
-        include/handlers/storage_component.h
         src/handlers/storage_component.cpp
+        src/handlers/scaling.cpp
+        src/handlers/dithering.cpp
         include/core/bytes.h
         include/core/pnm.h
         src/core/pnm.cpp
