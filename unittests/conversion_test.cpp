@@ -28,6 +28,46 @@ TEST(PnmConversion, RGBtoHSV) {
   ASSERT_EQ(rgb, rgb_);
 }
 
+TEST(PnmConversion, RGBtoCMY) {
+  std::string buffer = "P6 2 2 255 aaabbbcccddd";
+  PNM<ColorSpace::RGB> rgb;
+  EXPECT_NO_THROW(
+      rgb = PNM<ColorSpace::RGB>(bytes{buffer.begin(), buffer.end()}););
+  auto cmy = ColorSpaceConversion<ColorSpace::RGB, ColorSpace::CMY>(rgb);
+  auto rgb_ = ColorSpaceConversion<ColorSpace::CMY, ColorSpace::RGB>(cmy);
+  ASSERT_EQ(rgb, rgb_);
+}
+
+TEST(PnmConversion, RGBtoYCbCr601) {
+  std::string buffer = "P6 2 2 255 aaabbbcccddd";
+  PNM<ColorSpace::RGB> rgb;
+  EXPECT_NO_THROW(
+      rgb = PNM<ColorSpace::RGB>(bytes{buffer.begin(), buffer.end()}););
+  auto y601 = ColorSpaceConversion<ColorSpace::RGB, ColorSpace::YCbCr601>(rgb);
+  auto rgb_ = ColorSpaceConversion<ColorSpace::YCbCr601, ColorSpace::RGB>(y601);
+  ASSERT_EQ(rgb, rgb_);
+}
+
+TEST(PnmConversion, RGBtoYCbCr709) {
+  std::string buffer = "P6 2 2 255 aaabbbcccddd";
+  PNM<ColorSpace::RGB> rgb;
+  EXPECT_NO_THROW(
+      rgb = PNM<ColorSpace::RGB>(bytes{buffer.begin(), buffer.end()}););
+  auto y709 = ColorSpaceConversion<ColorSpace::RGB, ColorSpace::YCbCr709>(rgb);
+  auto rgb_ = ColorSpaceConversion<ColorSpace::YCbCr709, ColorSpace::RGB>(y709);
+  ASSERT_EQ(rgb, rgb_);
+}
+
+TEST(PnmConversion, RGBtoYCoCg) {
+  std::string buffer = "P6 2 2 255 aaabbbcccddd";
+  PNM<ColorSpace::RGB> rgb;
+  EXPECT_NO_THROW(
+      rgb = PNM<ColorSpace::RGB>(bytes{buffer.begin(), buffer.end()}););
+  auto ycocg = ColorSpaceConversion<ColorSpace::RGB, ColorSpace::YCoCg>(rgb);
+  auto rgb_ = ColorSpaceConversion<ColorSpace::YCoCg, ColorSpace::RGB>(ycocg);
+  ASSERT_EQ(rgb, rgb_);
+}
+
 TEST(PnmConversion, RGBtoNONE) {
   std::string buffer = "P6 2 2 255 aaabbbcccddd";
   PNM<ColorSpace::RGB> rgb(bytes{buffer.begin(), buffer.end()});

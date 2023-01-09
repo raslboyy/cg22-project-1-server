@@ -24,7 +24,6 @@ class PNM {
   explicit PNM(bytes&& buffer);
   PNM(uint32_t width, uint32_t height,
       color_space::Pixel<colorSpace> color = color_space::Pixel<colorSpace>{});
-  PNM(const PNM&) = default;
   [[nodiscard]] uint32_t width() const { return header_.width; }
   [[nodiscard]] uint32_t height() const { return header_.height; }
   [[nodiscard]] bytes GetRaw() const;

@@ -72,9 +72,93 @@ struct Pixel<ColorSpace::HSL> {
 
 template <>
 struct Pixel<ColorSpace::HSV> {
+  Pixel() = default;
+  Pixel(int32_t h, int32_t s, int32_t l)
+      : hue(h / 255.0 * 360.0), saturation(s / 255.0), value(l / 255.0) {}
   channel hue{};
   channel saturation{};
   channel value{};
+  template <std::size_t I>
+  [[nodiscard]] int32_t get() const {
+    if constexpr (I == 0)
+      return std::round(hue * 255. / 360.);
+    else
+      return std::round(255 * std::get<I - 1>(std::tie(saturation, value)));
+  }
+};
+
+template <>
+struct Pixel<ColorSpace::YCbCr601> {
+  Pixel() = default;
+  Pixel(int32_t y, int32_t cb, int32_t cr)
+      : luma(y / 255.0),
+        blue_diff(cb / 255.0 - 0.5),
+        red_diff(cr / 255.0 - 0.5) {}
+  channel luma{};
+  channel blue_diff{};
+  channel red_diff{};
+  template <std::size_t I>
+  [[nodiscard]] int32_t get() const {
+    if constexpr (I == 0)
+      return std::round(luma * 255);
+    else
+      return std::round(255 *
+                        (std::get<I - 1>(std::tie(blue_diff, red_diff)) + 0.5));
+  }
+};
+
+template <>
+struct Pixel<ColorSpace::YCbCr709> {
+  Pixel() = default;
+  Pixel(int32_t y, int32_t cb, int32_t cr)
+      : luma(y / 255.0),
+        blue_diff(cb / 255.0 - 0.5),
+        red_diff(cr / 255.0 - 0.5) {}
+  channel luma{};
+  channel blue_diff{};
+  channel red_diff{};
+  template <std::size_t I>
+  [[nodiscard]] int32_t get() const {
+    if constexpr (I == 0)
+      return std::round(luma * 255);
+    else
+      return std::round(255 *
+                        (std::get<I - 1>(std::tie(blue_diff, red_diff)) + 0.5));
+  }
+};
+
+template <>
+struct Pixel<ColorSpace::YCoCg> {
+  Pixel() = default;
+  Pixel(int32_t y, int32_t co, int32_t cg)
+      : luma(y / 255.0),
+        chroma_orange(co / 255.0 - 0.5),
+        chroma_green(cg / 255.0 - 0.5) {}
+  channel luma{};
+  channel chroma_orange{};
+  channel chroma_green{};
+  template <std::size_t I>
+  [[nodiscard]] int32_t get() const {
+    if constexpr (I == 0)
+      return std::round(luma * 255);
+    else
+      return std::round(
+          255 * (std::get<I - 1>(std::tie(chroma_green, chroma_orange)) + 0.5));
+  }
+};
+
+template <>
+struct Pixel<ColorSpace::CMY> {
+  Pixel() = default;
+  Pixel(int32_t c, int32_t m, int32_t y)
+      : cian(c / 255.0), magenta(m / 255.0), yellow(y / 255.0) {}
+  channel cian{};
+  channel magenta{};
+  channel yellow{};
+  template <std::size_t I>
+  [[nodiscard]] int32_t get() const {
+    return std::round(255 * std::get<I>(std::tie(cian, magenta, yellow)));
+  }
 };
 
 template <ColorSpace From, ColorSpace To, Mask Channel = Mask::ALL>
@@ -100,6 +184,46 @@ struct ColorSpaceConversion<ColorSpace::RGB, ColorSpace::HSV> {
 template <>
 struct ColorSpaceConversion<ColorSpace::HSV, ColorSpace::RGB> {
   Pixel<ColorSpace::RGB> operator()(const Pixel<ColorSpace::HSV>& pixel);
+};
+
+template <>
+struct ColorSpaceConversion<ColorSpace::RGB, ColorSpace::CMY> {
+  Pixel<ColorSpace::CMY> operator()(const Pixel<ColorSpace::RGB>& pixel);
+};
+
+template <>
+struct ColorSpaceConversion<ColorSpace::CMY, ColorSpace::RGB> {
+  Pixel<ColorSpace::RGB> operator()(const Pixel<ColorSpace::CMY>& pixel);
+};
+
+template <>
+struct ColorSpaceConversion<ColorSpace::RGB, ColorSpace::YCbCr601> {
+  Pixel<ColorSpace::YCbCr601> operator()(const Pixel<ColorSpace::RGB>& pixel);
+};
+
+template <>
+struct ColorSpaceConversion<ColorSpace::YCbCr601, ColorSpace::RGB> {
+  Pixel<ColorSpace::RGB> operator()(const Pixel<ColorSpace::YCbCr601>& pixel);
+};
+
+template <>
+struct ColorSpaceConversion<ColorSpace::RGB, ColorSpace::YCbCr709> {
+  Pixel<ColorSpace::YCbCr709> operator()(const Pixel<ColorSpace::RGB>& pixel);
+};
+
+template <>
+struct ColorSpaceConversion<ColorSpace::YCbCr709, ColorSpace::RGB> {
+  Pixel<ColorSpace::RGB> operator()(const Pixel<ColorSpace::YCbCr709>& pixel);
+};
+
+template <>
+struct ColorSpaceConversion<ColorSpace::RGB, ColorSpace::YCoCg> {
+  Pixel<ColorSpace::YCoCg> operator()(const Pixel<ColorSpace::RGB>& pixel);
+};
+
+template <>
+struct ColorSpaceConversion<ColorSpace::YCoCg, ColorSpace::RGB> {
+  Pixel<ColorSpace::RGB> operator()(const Pixel<ColorSpace::YCoCg>& pixel);
 };
 
 template <ColorSpace From, Mask Channel>

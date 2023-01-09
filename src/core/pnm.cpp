@@ -73,5 +73,10 @@ void PNM<colorSpace>::cursor_skip_whitespaces(size_t& cursor,
 template class PNM<color_space::ColorSpace::NONE>;
 template class PNM<color_space::ColorSpace::RGB>;
 template class PNM<color_space::ColorSpace::HSL>;
+template class PNM<color_space::ColorSpace::HSV>;
+template class PNM<color_space::ColorSpace::CMY>;
+template class PNM<color_space::ColorSpace::YCbCr601>;
+template class PNM<color_space::ColorSpace::YCbCr709>;
+template class PNM<color_space::ColorSpace::YCoCg>;
 
 }  // namespace server::core::pnm

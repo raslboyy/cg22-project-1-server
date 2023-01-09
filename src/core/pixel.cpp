@@ -95,11 +95,12 @@ ColorSpaceConversion<ColorSpace::HSV, ColorSpace::RGB>::operator()(
   double hh, p, q, t, ff;
   long i;
   Pixel<ColorSpace::RGB> out;
+  auto value = in.value;
 
   if (in.saturation <= 0.0) {  // < is bogus, just shuts up warnings
-    out.red = in.value;
-    out.green = in.value;
-    out.blue = in.value;
+    out.red = value;
+    out.green = value;
+    out.blue = value;
     return out;
   }
   hh = in.hue;
@@ -107,40 +108,40 @@ ColorSpaceConversion<ColorSpace::HSV, ColorSpace::RGB>::operator()(
   hh /= 60.0;
   i = (long)hh;
   ff = hh - i;
-  p = in.value * (1.0 - in.saturation);
-  q = in.value * (1.0 - (in.saturation * ff));
-  t = in.value * (1.0 - (in.saturation * (1.0 - ff)));
+  p = value * (1.0 - in.saturation);
+  q = value * (1.0 - (in.saturation * ff));
+  t = value * (1.0 - (in.saturation * (1.0 - ff)));
 
   switch (i) {
     case 0:
-      out.red = in.value;
+      out.red = value;
       out.green = t;
       out.blue = p;
       break;
     case 1:
       out.red = q;
-      out.green = in.value;
+      out.green = value;
       out.blue = p;
       break;
     case 2:
       out.red = p;
-      out.green = in.value;
+      out.green = value;
       out.blue = t;
       break;
 
     case 3:
       out.red = p;
       out.green = q;
-      out.blue = in.value;
+      out.blue = value;
       break;
     case 4:
       out.red = t;
       out.green = p;
-      out.blue = in.value;
+      out.blue = value;
       break;
     case 5:
     default:
-      out.red = in.value;
+      out.red = value;
       out.green = p;
       out.blue = q;
       break;
@@ -173,6 +174,96 @@ ColorSpaceConversion<ColorSpace::HSL, ColorSpace::RGB>::operator()(
   auto m = from.lightness - C / 2;
   Pixel<ColorSpace::RGB> to;
   to.red = R1 + m, to.green = G1 + m, to.blue = B1 + m;
+  return to;
+}
+
+// From CMY to RGB
+Pixel<ColorSpace::RGB>
+ColorSpaceConversion<ColorSpace::CMY, ColorSpace::RGB>::operator()(
+    const Pixel<ColorSpace::CMY>& from) {
+  Pixel<ColorSpace::RGB> to;
+  to.red = 1 - from.cian;
+  to.green = 1 - from.magenta;
+  to.blue = 1 - from.yellow;
+  return to;
+}
+
+// From RGB to CMY
+Pixel<ColorSpace::CMY>
+ColorSpaceConversion<ColorSpace::RGB, ColorSpace::CMY>::operator()(
+    const Pixel<ColorSpace::RGB>& from) {
+  Pixel<ColorSpace::CMY> to;
+  to.cian = 1 - from.red;
+  to.magenta = 1 - from.green;
+  to.yellow = 1 - from.blue;
+  return to;
+}
+
+// From YCbCr601 to RGB
+Pixel<ColorSpace::RGB>
+ColorSpaceConversion<ColorSpace::YCbCr601, ColorSpace::RGB>::operator()(
+    const Pixel<ColorSpace::YCbCr601>& from) {
+  Pixel<ColorSpace::RGB> to;
+  to.red = from.luma + 1.402 * from.red_diff;
+  to.green = from.luma - (0.299 * 1.402 / 0.587) * from.red_diff -
+             (0.114 * 1.772 / 0.587) * from.blue_diff;
+  to.blue = from.luma + 1.772 * from.blue_diff;
+  return to;
+}
+
+// From RGB to YCbCr601
+Pixel<ColorSpace::YCbCr601>
+ColorSpaceConversion<ColorSpace::RGB, ColorSpace::YCbCr601>::operator()(
+    const Pixel<ColorSpace::RGB>& from) {
+  Pixel<ColorSpace::YCbCr601> to;
+  to.luma = 0.299 * from.red + 0.587 * from.green + 0.114 * from.blue;
+  to.blue_diff = (from.blue - to.luma) / 1.772;
+  to.red_diff = (from.red - to.luma) / 1.402;
+  return to;
+}
+
+// From YCbCr709 to RGB
+Pixel<ColorSpace::RGB>
+ColorSpaceConversion<ColorSpace::YCbCr709, ColorSpace::RGB>::operator()(
+    const Pixel<ColorSpace::YCbCr709>& from) {
+  Pixel<ColorSpace::RGB> to;
+  to.red = from.luma + 1.5748 * from.red_diff;
+  to.green = from.luma - (0.2126 * 1.5748 / 0.7152) * from.red_diff -
+             (0.0722 * 1.8556 / 0.7152) * from.blue_diff;
+  to.blue = from.luma + 1.8556 * from.blue_diff;
+  return to;
+}
+
+// From RGB to YCbCr709
+Pixel<ColorSpace::YCbCr709>
+ColorSpaceConversion<ColorSpace::RGB, ColorSpace::YCbCr709>::operator()(
+    const Pixel<ColorSpace::RGB>& from) {
+  Pixel<ColorSpace::YCbCr709> to;
+  to.luma = 0.2126 * from.red + 0.7152 * from.green + 0.0722 * from.blue;
+  to.blue_diff = (from.blue - to.luma) / 1.8556;
+  to.red_diff = (from.red - to.luma) / 1.5748;
+  return to;
+}
+
+// From YCoCg to RGB
+Pixel<ColorSpace::RGB>
+ColorSpaceConversion<ColorSpace::YCoCg, ColorSpace::RGB>::operator()(
+    const Pixel<ColorSpace::YCoCg>& from) {
+  Pixel<ColorSpace::RGB> to;
+  to.red = from.luma + from.chroma_orange - from.chroma_green;
+  to.green = from.luma + from.chroma_green;
+  to.blue = from.luma - from.chroma_orange - from.chroma_green;
+  return to;
+}
+
+// From RGB to YCoCg
+Pixel<ColorSpace::YCoCg>
+ColorSpaceConversion<ColorSpace::RGB, ColorSpace::YCoCg>::operator()(
+    const Pixel<ColorSpace::RGB>& from) {
+  Pixel<ColorSpace::YCoCg> to;
+  to.luma = from.red / 4 + from.green / 2 + from.blue / 4;
+  to.chroma_orange = from.red / 2 - from.blue / 2;
+  to.chroma_green = from.green / 2 - from.red / 4 - from.blue / 4;
   return to;
 }
 

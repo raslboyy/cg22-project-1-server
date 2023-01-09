@@ -36,9 +36,9 @@ bytes Body<colorSpace>::GetRaw() const {
   bytes raw(n);
   for (int i = 0; i < static_cast<int>(n); i += 3) {
     auto raw_pixel = color_space::GetRaw<colorSpace>(pixels[i / 3]);
-    raw[i] = std::get<0>(raw_pixel);
-    raw[i + 1] = std::get<1>(raw_pixel);
-    raw[i + 2] = std::get<2>(raw_pixel);
+    raw[i] = std::max(0, std::min(255, std::get<0>(raw_pixel)));
+    raw[i + 1] = std::max(0, std::min(255, std::get<1>(raw_pixel)));
+    raw[i + 2] = std::max(0, std::min(255, std::get<2>(raw_pixel)));
   }
   return raw;
 }
@@ -51,7 +51,12 @@ bytes Body<color_space::ColorSpace::NONE>::GetRaw() const {
   return raw;
 }
 
-template struct Body<color_space::ColorSpace::NONE>;
 template struct Body<color_space::ColorSpace::RGB>;
+template struct Body<color_space::ColorSpace::NONE>;
 template struct Body<color_space::ColorSpace::HSL>;
+template struct Body<color_space::ColorSpace::HSV>;
+template struct Body<color_space::ColorSpace::CMY>;
+template struct Body<color_space::ColorSpace::YCbCr601>;
+template struct Body<color_space::ColorSpace::YCbCr709>;
+template struct Body<color_space::ColorSpace::YCoCg>;
 }  // namespace server::core::pnm
