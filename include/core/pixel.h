@@ -226,6 +226,13 @@ struct ColorSpaceConversion<ColorSpace::YCoCg, ColorSpace::RGB> {
   Pixel<ColorSpace::RGB> operator()(const Pixel<ColorSpace::YCoCg>& pixel);
 };
 
+template <>
+struct ColorSpaceConversion<ColorSpace::RGB, ColorSpace::RGB> {
+  Pixel<ColorSpace::RGB> operator()(Pixel<ColorSpace::RGB> pixel) {
+    return pixel;
+  }
+};
+
 template <ColorSpace From, Mask Channel>
 struct ColorSpaceConversion<From, ColorSpace::NONE, Channel> {
   Pixel<ColorSpace::NONE> operator()(const Pixel<From>& pixel) {
