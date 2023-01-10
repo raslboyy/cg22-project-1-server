@@ -56,16 +56,13 @@ std::string ConvertFromTo(std::string_view file) {
 
 template <ColorSpace From, ColorSpace To>
 std::string ConvertFromTo(std::string_view channel, std::string_view file) {
-  if constexpr (To == ColorSpace::NONE) {
-    if (channel == "first")
-      return ConvertFromTo<From, To, Mask::FIRST>(file);
-    else if (channel == "second")
-      return ConvertFromTo<From, To, Mask::SECOND>(file);
-    else if (channel == "third")
-      return ConvertFromTo<From, To, Mask::THIRD>(file);
-  } else {
-    if (channel == "all") return ConvertFromTo<From, To, Mask::ALL>(file);
-  }
+  if (channel == "first")
+    return ConvertFromTo<From, ColorSpace::NONE, Mask::FIRST>(file);
+  else if (channel == "second")
+    return ConvertFromTo<From, ColorSpace::NONE, Mask::SECOND>(file);
+  else if (channel == "third")
+    return ConvertFromTo<From, ColorSpace::NONE, Mask::THIRD>(file);
+  if (channel == "all") return ConvertFromTo<From, To, Mask::ALL>(file);
   LOG_DEBUG() << "not impl in channel";
   throw std::logic_error("not impl");
 }
