@@ -66,6 +66,7 @@ components_manager:
             path: /upload                  # Registering handler by URL '/hello'.
             method: GET              # It will only reply to GET (HEAD) and POST requests.
             task_processor: main-task-processor  # Run it on CPU bound task processor
+            max_request_size: 10545020
 
         handler-draw-line:                    # Finally! Our handler.
             path: /draw-line                  # Registering handler by URL '/hello'.
