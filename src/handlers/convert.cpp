@@ -46,25 +46,36 @@ class Convert final : public userver::server::handlers::HttpHandlerBase {
 };
 
 template <ColorSpace From, ColorSpace To, Mask Channel>
-std::string ConvertFromTo(std::string_view file) {
+PNM<To> ConvertFromTo(std::string_view file) {
   PNM<From> from({file.begin(), file.end()});
   auto rgb = ColorSpaceConversion<From, ColorSpace::RGB, Channel>(from);
   auto to = ColorSpaceConversion<ColorSpace::RGB, To, Channel>(rgb);
-  auto raw = to.GetRaw();
-  return {raw.begin(), raw.end()};
+  return to;
 }
 
 template <ColorSpace From, ColorSpace To>
 std::string ConvertFromTo(std::string_view channel, std::string_view file) {
-  if (channel == "first")
-    return ConvertFromTo<From, ColorSpace::NONE, Mask::FIRST>(file);
-  else if (channel == "second")
-    return ConvertFromTo<From, ColorSpace::NONE, Mask::SECOND>(file);
-  else if (channel == "third")
-    return ConvertFromTo<From, ColorSpace::NONE, Mask::THIRD>(file);
-  if (channel == "all") return ConvertFromTo<From, To, Mask::ALL>(file);
-  LOG_DEBUG() << "not impl in channel";
-  throw std::logic_error("not impl");
+  bytes raw;
+  if (channel == "first") {
+    auto res = ColorSpaceConversion<To, ColorSpace::NONE, Mask::FIRST>(
+        ConvertFromTo<From, To, Mask::ALL>(file));
+    raw = res.GetRaw();
+  } else if (channel == "second") {
+    auto res = ColorSpaceConversion<To, ColorSpace::NONE, Mask::SECOND>(
+        ConvertFromTo<From, To, Mask::ALL>(file));
+    raw = res.GetRaw();
+  } else if (channel == "third") {
+    auto res = ColorSpaceConversion<To, ColorSpace::NONE, Mask::THIRD>(
+        ConvertFromTo<From, To, Mask::ALL>(file));
+    raw = res.GetRaw();
+  } else if (channel == "all") {
+    auto res = ConvertFromTo<From, To, Mask::ALL>(file);
+    raw = res.GetRaw();
+  } else {
+    LOG_DEBUG() << "not impl in channel";
+    throw std::logic_error("not impl");
+  }
+  return {raw.begin(), raw.end()};
 }
 
 template <ColorSpace From>
