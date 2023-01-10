@@ -72,16 +72,19 @@ components_manager:
             path: /draw-line                  # Registering handler by URL '/hello'.
             method: GET              # It will only reply to GET (HEAD) and POST requests.
             task_processor: main-task-processor  # Run it on CPU bound task processor
+            max_request_size: 1999999999
 
         handler-dithering:
             path: /dithering
             method: GET
             task_processor: main-task-processor
+            max_request_size: 1999999999
 
         handler-scaling:
             path: /scaling
             method: GET
             task_processor: main-task-processor
+            max_request_size: 1999999999
 
         storage-service:
             task_processor: main-task-processor
