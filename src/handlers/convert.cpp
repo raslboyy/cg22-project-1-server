@@ -48,7 +48,8 @@ class Convert final : public userver::server::handlers::HttpHandlerBase {
 template <ColorSpace From, ColorSpace To, Mask Channel>
 std::string ConvertFromTo(std::string_view file) {
   PNM<From> from({file.begin(), file.end()});
-  auto to = ColorSpaceConversion<From, To, Channel>(from);
+  auto rgb = ColorSpaceConversion<From, ColorSpace::RGB, Channel>(from);
+  auto to = ColorSpaceConversion<ColorSpace::RGB, To, Channel>(rgb);
   auto raw = to.GetRaw();
   return {raw.begin(), raw.end()};
 }
@@ -65,19 +66,40 @@ std::string ConvertFromTo(std::string_view channel, std::string_view file) {
   } else {
     if (channel == "all") return ConvertFromTo<From, To, Mask::ALL>(file);
   }
+  LOG_DEBUG() << "not impl in channel";
   throw std::logic_error("not impl");
 }
 
 template <ColorSpace From>
 std::string ConvertFromTo(std::string_view to, std::string_view channel,
                           std::string_view file) {
+  if (to == "RGB") return ConvertFromTo<From, ColorSpace::RGB>(channel, file);
   if (to == "HSL") return ConvertFromTo<From, ColorSpace::HSL>(channel, file);
+  if (to == "HSV") return ConvertFromTo<From, ColorSpace::HSV>(channel, file);
+  if (to == "YCbCr601")
+    return ConvertFromTo<From, ColorSpace::YCbCr601>(channel, file);
+  if (to == "YCbCr709")
+    return ConvertFromTo<From, ColorSpace::YCbCr709>(channel, file);
+  if (to == "YCoCg")
+    return ConvertFromTo<From, ColorSpace::YCoCg>(channel, file);
+  if (to == "CMY") return ConvertFromTo<From, ColorSpace::CMY>(channel, file);
+  LOG_DEBUG() << "not impl in to_channel";
   throw std::logic_error("not impl");
 }
 
 std::string ConvertFromTo(std::string_view from, std::string_view to,
                           std::string_view channel, std::string_view file) {
   if (from == "RGB") return ConvertFromTo<ColorSpace::RGB>(to, channel, file);
+  if (from == "HSL") return ConvertFromTo<ColorSpace::HSL>(to, channel, file);
+  if (from == "HSV") return ConvertFromTo<ColorSpace::HSV>(to, channel, file);
+  if (from == "YCbCr601")
+    return ConvertFromTo<ColorSpace::YCbCr601>(to, channel, file);
+  if (from == "YCbCr709")
+    return ConvertFromTo<ColorSpace::YCbCr709>(to, channel, file);
+  if (from == "YCoCg")
+    return ConvertFromTo<ColorSpace::YCoCg>(to, channel, file);
+  if (from == "CMY") return ConvertFromTo<ColorSpace::CMY>(to, channel, file);
+  LOG_DEBUG() << "not impl in from_to_channel";
   throw std::logic_error("not impl");
 }
 
