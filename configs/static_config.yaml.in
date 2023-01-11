@@ -88,10 +88,16 @@ components_manager:
             max_request_size: 1999999999
 
         handler-gradient:
-                    path: /gradient
-                    method: GET
-                    task_processor: main-task-processor
-                    max_request_size: 1999999999
+            path: /gradient
+            method: GET
+            task_processor: main-task-processor
+            max_request_size: 1999999999
+
+        handler-convert-gamma:
+            path: /gamma/convert
+            method: GET
+            task_processor: main-task-processor
+            max_request_size: 1999999999
 
         storage-service:
             task_processor: main-task-processor
