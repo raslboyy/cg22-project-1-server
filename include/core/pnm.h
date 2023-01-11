@@ -48,7 +48,7 @@ class PNM {
  private:
   Header header_{};
   Body<colorSpace> body_{};
-  double gamma_;
+  double gamma_{0.};
   static void cursor_skip_whitespaces(size_t& cursor, const bytes& buffer);
   static int32_t read_int(size_t& cursor, const bytes& buffer);
 
