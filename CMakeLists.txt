@@ -15,6 +15,7 @@ add_library(${PROJECT_NAME}_objs OBJECT
         src/handlers/storage_component.cpp
         src/handlers/scaling.cpp
         src/handlers/dithering.cpp
+        src/handlers/gradient.cpp
         include/core/bytes.h
         include/core/pnm.h
         src/core/pnm.cpp
