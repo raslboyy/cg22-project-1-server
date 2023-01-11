@@ -46,6 +46,8 @@ add_library(${PROJECT_NAME}_objs OBJECT
         src/utils/useful.cpp
         src/scaling/lanczos.cpp
         src/scaling/bc_splines.cpp
+        include/gamma
+        src/gamma/gamma.cpp
         )
 target_link_libraries(${PROJECT_NAME}_objs PUBLIC userver-core)
 target_include_directories(${PROJECT_NAME}_objs PRIVATE src/core)

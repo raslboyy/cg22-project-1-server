@@ -42,9 +42,13 @@ class PNM {
         BracketsProxy(const_cast<PNM&>(*this), i * header_.width));
   }
 
+  double gamma() const { return gamma_; }
+  void set_gamma(double gamma) { gamma_ = gamma; }
+
  private:
   Header header_{};
   Body<colorSpace> body_{};
+  double gamma_;
   static void cursor_skip_whitespaces(size_t& cursor, const bytes& buffer);
   static int32_t read_int(size_t& cursor, const bytes& buffer);
 
