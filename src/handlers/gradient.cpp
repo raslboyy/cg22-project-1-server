@@ -29,12 +29,11 @@ class Gradient final : public userver::server::handlers::HttpHandlerBase {
   std::string HandleRequestThrow(
       const userver::server::http::HttpRequest& request,
       userver::server::request::RequestContext&) const override {
-    auto file = request.GetFormDataArg("file").value;
     auto w = request.GetArg("w");
     auto h = request.GetArg("h");
     LOG_DEBUG() << w << " " << h;
 
-    if (file.empty() || w.empty() || h.empty()) {
+    if (w.empty() || h.empty()) {
       request.GetHttpResponse().SetStatus(
           userver::server::http::HttpStatus::kBadRequest);
       return {};
@@ -43,7 +42,6 @@ class Gradient final : public userver::server::handlers::HttpHandlerBase {
     auto& response = request.GetHttpResponse();
     response.SetContentType("application/form-data");
     response.SetStatus(userver::server::http::HttpStatus::kOk);
-    PNM<ColorSpace::NONE> image({file.begin(), file.end()});
 
     auto raw = server::core::utils::GenerateGradient<ColorSpace::NONE>(
                    std::stoi(h), std::stoi(w))
