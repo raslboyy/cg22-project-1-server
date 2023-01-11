@@ -32,4 +32,5 @@ PNM<ColorSpace::RGB> ContrastCorrection(PNM<ColorSpace::RGB> image, double ignor
     for (int j = 0; j < m; j++) {
       image[i][j]*=min_coef;
     }
+  return image;
 }
