@@ -41,7 +41,7 @@ class Jpeg final : public userver::server::handlers::HttpHandlerBase {
       server::core::jpeg::Jpeg jpeg({file.begin(), file.end()});
       jpeg.Decode();
       LOG_DEBUG() << "it's jpeg";
-    } catch (std::exception& e) {
+    } catch (...) {
       response.SetStatus(userver::server::http::HttpStatus::kBadRequest);
       LOG_DEBUG() << "not jpeg";
       return {};
