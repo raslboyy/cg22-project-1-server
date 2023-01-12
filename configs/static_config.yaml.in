@@ -105,5 +105,10 @@ components_manager:
             task_processor: main-task-processor
             max_request_size: 1999999999
 
+        handler-histogram:
+            path: /histogram
+            method: GET
+            task_processor: main-task-processor
+
         storage-service:
             task_processor: main-task-processor

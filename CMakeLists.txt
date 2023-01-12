@@ -54,6 +54,9 @@ add_library(${PROJECT_NAME}_objs OBJECT
         src/jpeg/haffman.cpp
         src/jpeg/idct.cpp
         src/handlers/jpeg.cpp
+        include/histogram
+        src/histogram/histogram.cpp
+        src/handlers/histogram.cpp
         )
 target_link_libraries(${PROJECT_NAME}_objs PUBLIC userver-core)
 target_include_directories(${PROJECT_NAME}_objs PRIVATE src/core)
