@@ -59,8 +59,8 @@ std::pair<int, byte> Huffman::Decode(const bytes& raw, int& k) {
   //              << std::endl;
   //    if (k == (int)raw.size()) return 0;
   //  assert(false);
-  if (k != (int)raw.size()) throw std::exception();
-  return {0, 0};
+  //  if (k != (int)raw.size()) throw std::exception();
+  return {1, 1};
 }
 
 }  // namespace server::core::jpeg
