@@ -10,6 +10,7 @@
 #include "handlers/draw_line.h"
 #include "handlers/gamma.h"
 #include "handlers/gradient.h"
+#include "handlers/histogram.h"
 #include "handlers/jpeg.h"
 #include "handlers/scaling.h"
 #include "handlers/storage_component.h"
@@ -32,6 +33,7 @@ int main(int argc, char* argv[]) {
   service_template::AppendGradient(component_list);
   service_template::AppendConvertGamma(component_list);
   service_template::AppendJpeg(component_list);
+  service_template::AppendHistogram(component_list);
 
   return userver::utils::DaemonMain(argc, argv, component_list);
 }

@@ -37,7 +37,7 @@ class Histogram final : public userver::server::handlers::HttpHandlerBase {
     response["a"].Resize(0);
     for (const auto& i : server::core::histogram::CalculateFrequencies(p6))
       for (auto j : i) response["a"].PushBack(j);
-
+  
     request.GetHttpResponse().SetStatus(userver::server::http::HttpStatus::kOk);
     return userver::formats::json::ToString(response.ExtractValue());
   }
