@@ -68,9 +68,9 @@ auto Jpeg::BuildMatrix(const bytes& data, int& k, byte idx, bytes quant,
   assert(htables_.find(idx) != htables_.end());
   auto res = htables_[idx].Decode(data, k);
   auto code = res.first;
-  k += code;
   auto bits = res.second;
-  auto dccoeff = DecodeNumber(code, bits) + olddccoeff;
+  auto dccoeff = 0.;
+  //  auto dccoeff = DecodeNumber(code, bits) + olddccoeff;
 
   i.base[0] = (dccoeff)*quant[0];
   auto l = 1;
@@ -78,6 +78,7 @@ auto Jpeg::BuildMatrix(const bytes& data, int& k, byte idx, bytes quant,
     res = htables_[16 + idx].Decode(data, k);
     code = res.first;
     if (k == (int)data.size()) break;
+    //    code--;
 
     if (code > 15) {
       l += code >> 4;

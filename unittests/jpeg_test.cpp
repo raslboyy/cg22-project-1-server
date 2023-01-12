@@ -10,7 +10,7 @@ using namespace server::core::pnm;
 // using ColorSpace = color_space::ColorSpace;
 
 TEST(Jpeg, Basic) {
-  auto jpeg = Jpeg(server::core::utils::load("sample_640×426.jpeg"));
+  auto jpeg = Jpeg(server::core::utils::load("not_pnm.jpg"));
   jpeg.Decode();
   //  auto pnm =
   //      ColorSpaceConversion<ColorSpace::YCbCr601, ColorSpace::RGB>(jpeg.pnm);

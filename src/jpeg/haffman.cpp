@@ -49,7 +49,7 @@ std::pair<int, byte> Huffman::Decode(const bytes& raw, int& k) {
   for (int i = 1; i < 16 && k < (int)raw.size(); i++, k++) {
     code += GetBit(raw, k);
     //    std::cout << code << std::endl;
-    if (table.find({code, i}) != table.end()) return {i + 1, table[{code, i}]};
+    if (table.find({code, i}) != table.end()) return {i, table[{code, i}]};
     code = (code << 1);
   }
   //  std::cout << k << " " << (int)raw.size() << std::endl;
