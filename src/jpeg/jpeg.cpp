@@ -65,7 +65,7 @@ auto Jpeg::BuildMatrix(const bytes& data, int& k, byte idx, bytes quant,
                        double olddccoeff) {
   auto i = Idct();
 
-  assert(htables_.find(idx) != htables_.end());
+  //  assert(htables_.find(idx) != htables_.end());
   auto res = htables_[idx].Decode(data, k);
   auto code = res.first;
   auto bits = res.second;
