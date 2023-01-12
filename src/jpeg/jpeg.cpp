@@ -70,7 +70,7 @@ auto Jpeg::BuildMatrix(const bytes& data, int& k, byte idx, bytes quant,
   auto code = res.first;
   auto bits = res.second;
   //  auto dccoeff = 0.;
-  auto dccoeff = DecodeNumber(code, bits) + olddccoeff;
+  auto dccoeff = bits + olddccoeff;
 
   i.base[0] = (dccoeff)*quant[0];
   auto l = 1;
@@ -87,8 +87,9 @@ auto Jpeg::BuildMatrix(const bytes& data, int& k, byte idx, bytes quant,
 
     if (k + code >= (int)data.size()) break;
     //    assert(k + code < (int)data.size());
-    bits = 0;
-    for (int j = 0; j < code; j++) bits = (bits << 1) + GetBit(data, k++);
+    //    bits = 0;
+    //    for (int j = 0; j < code; j++) bits = (bits << 1) + GetBit(data, k++);
+    bits = res.second;
 
     if (l < 64) {
       auto coeff = DecodeNumber(code, bits);
