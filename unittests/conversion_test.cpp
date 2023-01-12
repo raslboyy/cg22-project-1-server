@@ -6,6 +6,7 @@
 #include <cctype>
 #include <string>
 
+using namespace server::core;
 using namespace server::core::pnm;
 using ColorSpace = color_space::ColorSpace;
 using Mask = color_space::Mask;

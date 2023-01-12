@@ -14,7 +14,7 @@ bytes load(std::string file) {
   infile.seekg(0, std::ios::beg);
   auto buffer = new char[length];
   infile.read(buffer, length);
-  server::core::pnm::bytes result(buffer, buffer + length);
+  bytes result(buffer, buffer + length);
   for (size_t i = 0; i != length; i++) result[i] = buffer[i];
   delete[] buffer;
   return result;

@@ -55,7 +55,7 @@ PNM<To> ConvertFromTo(std::string_view file) {
 
 template <ColorSpace From, ColorSpace To>
 std::string ConvertFromTo(std::string_view channel, std::string_view file) {
-  bytes raw;
+  server::core::bytes raw;
   if (channel == "first") {
     auto res = ColorSpaceConversion<To, ColorSpace::NONE, Mask::FIRST>(
         ConvertFromTo<From, To, Mask::ALL>(file));

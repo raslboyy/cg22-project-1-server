@@ -15,7 +15,7 @@ const auto static default_p5 =
 
 const auto static big_p5 = server::core::utils::GetBlankPnm<
     server::core::pnm::color_space::ColorSpace::NONE>(
-    1000, 1000, {(server::core::pnm::byte)255});
+    1000, 1000, {(server::core::byte)255});
 
 const auto static big_p6 = server::core::utils::GetBlankPnm<
     server::core::pnm::color_space::ColorSpace::RGB>(1000, 1000,

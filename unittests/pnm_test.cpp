@@ -3,6 +3,7 @@
 #include "core/pnm.h"
 
 using namespace server::core::pnm;
+using namespace server::core;
 using namespace server::core::pnm::color_space;
 
 TEST(PnmBasic, P5Struct) {

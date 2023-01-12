@@ -17,7 +17,7 @@ namespace service_template {
 
 namespace {
 
-template<auto Algo>
+template <auto Algo>
 using ScalingFunction = server::core::scaling::Scaling<Algo>;
 using Algorithm = server::core::scaling::Algorithm;
 using ShiftFunction = server::core::scaling::Shift;
@@ -65,7 +65,7 @@ class Scaling final : public userver::server::handlers::HttpHandlerBase {
 
     ShiftFunction shift(x_shift, y_shift);
     auto w_new = std::stoi(w_new_);
-    bytes raw;
+    server::core::bytes raw;
     if (alg == "bc_splines") {
       ScalingFunction<Algorithm::BcSplines> scaling(w_new, h_new, shift, B, C);
       raw = scaling(image).GetRaw();

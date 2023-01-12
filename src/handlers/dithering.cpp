@@ -52,7 +52,7 @@ class Dithering final : public userver::server::handlers::HttpHandlerBase {
     PNM<ColorSpace::NONE> image({file.begin(), file.end()});
 
     auto k_int = std::stoi(k);
-    bytes raw;
+    server::core::bytes raw;
     if (alg == "random") {
       DitheringFunction<Algorithm::Random, ColorSpace::NONE> dithering(k_int);
       raw = dithering(image).GetRaw();
