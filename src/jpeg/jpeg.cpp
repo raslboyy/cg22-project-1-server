@@ -69,8 +69,8 @@ auto Jpeg::BuildMatrix(const bytes& data, int& k, byte idx, bytes quant,
   auto res = htables_[idx].Decode(data, k);
   auto code = res.first;
   auto bits = res.second;
-  auto dccoeff = 0.;
-  //  auto dccoeff = DecodeNumber(code, bits) + olddccoeff;
+  //  auto dccoeff = 0.;
+  auto dccoeff = DecodeNumber(code, bits) + olddccoeff;
 
   i.base[0] = (dccoeff)*quant[0];
   auto l = 1;
@@ -158,18 +158,18 @@ void Jpeg::Decode() {
         for (int y = 0; y < height / 8; y++)
           for (int x = 0; x < width / 8; x++) {
             if (k == (int)data.size()) continue;
-            auto res = BuildMatrix(data, k, 0, qtables_[qtables_mapping[0]],
-                                   oldlumdccoeff);
+            auto res = BuildMatrix(data, k, qtables_mapping[0],
+                                   qtables_[qtables_mapping[0]], oldlumdccoeff);
             auto matL = res.first;
             oldlumdccoeff = res.second;
             if (k == (int)data.size()) continue;
-            res = BuildMatrix(data, k, 1, qtables_[qtables_mapping[1]],
-                              oldCrdccoeff);
+            res = BuildMatrix(data, k, qtables_mapping[0],
+                              qtables_[qtables_mapping[1]], oldCrdccoeff);
             auto matCr = res.first;
             oldCrdccoeff = res.second;
             if (k == (int)data.size()) continue;
-            res = BuildMatrix(data, k, 1, qtables_[qtables_mapping[2]],
-                              oldCbdccoeff);
+            res = BuildMatrix(data, k, qtables_mapping[0],
+                              qtables_[qtables_mapping[2]], oldCbdccoeff);
             auto matCb = res.first;
             oldCbdccoeff = res.second;
 
